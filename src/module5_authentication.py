@@ -15,12 +15,6 @@ api_usage = {}
 def hash_password(password):
     """
     Securely hashes a password using SHA-256.
-
-    Args:
-        password (str): User's plain-text password.
-
-    Returns:
-        str: Hashed password.
     """
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -28,13 +22,6 @@ def hash_password(password):
 def register_user(username, password):
     """
     Registers a new user.
-
-    Args:
-        username (str): Username.
-        password (str): User password.
-
-    Returns:
-        dict: Registration result.
     """
 
     if username in users:
@@ -64,13 +51,6 @@ def register_user(username, password):
 def authenticate_user(username, password):
     """
     Authenticates a user using username and password.
-
-    Args:
-        username (str): Username.
-        password (str): User password.
-
-    Returns:
-        bool: True if authentication succeeds.
     """
 
     if username not in users:
@@ -84,12 +64,6 @@ def authenticate_user(username, password):
 def validate_api_key(api_key):
     """
     Validates an API key and identifies the associated user.
-
-    Args:
-        api_key (str): API key.
-
-    Returns:
-        str or None: Username if valid, otherwise None.
     """
 
     for username, user_data in users.items():
@@ -102,12 +76,6 @@ def validate_api_key(api_key):
 def track_api_usage(username):
     """
     Tracks API requests made by a user.
-
-    Args:
-        username (str): Authenticated username.
-
-    Returns:
-        dict: Updated usage information.
     """
 
     if username not in api_usage:
@@ -127,12 +95,6 @@ def track_api_usage(username):
 def get_usage_statistics(username):
     """
     Returns API usage statistics for a user.
-
-    Args:
-        username (str): Username.
-
-    Returns:
-        dict: Usage statistics.
     """
 
     return api_usage.get(username, {
@@ -141,15 +103,19 @@ def get_usage_statistics(username):
     })
 
 
-def main():
-    print("=== Module 5: Secure User Authentication & API Usage Tracking ===")
+def run_authentication_demo():
+    """
+    Module 5 demonstration for the integrated Crypto AI system.
+    """
+
+    print("\n=== Module 5: Secure User Authentication & API Usage Tracking ===")
+
+    username = "crypto_user"
+    password = "SecurePassword123"
 
     # --------------------------------------------------
     # 1. Register user
     # --------------------------------------------------
-
-    username = "crypto_user"
-    password = "SecurePassword123"
 
     registration = register_user(username, password)
 
@@ -169,33 +135,38 @@ def main():
     # 3. Validate API key
     # --------------------------------------------------
 
-    if authenticated:
-        api_key = users[username]["api_key"]
+    if not authenticated:
+        return None
 
-        authenticated_user = validate_api_key(api_key)
+    api_key = users[username]["api_key"]
 
-        print("\nAPI Access:")
-        print(f"API key validated for user: {authenticated_user}")
+    authenticated_user = validate_api_key(api_key)
 
-        # --------------------------------------------------
-        # 4. Track API requests
-        # --------------------------------------------------
+    print("\nAPI Access:")
+    print(f"API key validated for user: {authenticated_user}")
 
-        print("\nAPI Usage Tracking:")
+    # --------------------------------------------------
+    # 4. Track API requests
+    # --------------------------------------------------
 
-        for _ in range(3):
-            usage = track_api_usage(username)
-            print(usage)
+    print("\nAPI Usage Tracking:")
 
-        # --------------------------------------------------
-        # 5. Display statistics
-        # --------------------------------------------------
+    for _ in range(3):
+        usage = track_api_usage(username)
+        print(usage)
 
-        statistics = get_usage_statistics(username)
+    # --------------------------------------------------
+    # 5. Display statistics
+    # --------------------------------------------------
 
-        print("\nUsage Statistics:")
-        print(statistics)
+    statistics = get_usage_statistics(username)
+
+    print("\nUsage Statistics:")
+    print(statistics)
+
+    return statistics
 
 
+# Standalone execution
 if __name__ == "__main__":
-    main()
+    run_authentication_demo()
