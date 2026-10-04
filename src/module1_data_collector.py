@@ -6,7 +6,7 @@ def fetch_crypto_data(symbols=["BTC", "ETH", "SOL"]):
     url = "https://api.coingecko.com/api/v3/coins/markets"
     params = {
         "vs_currency": "usd",
-        "ids": ",".join([s.lower() for s in symbols]),
+        "ids": "bitcoin,ethereum,solana",
         "order": "market_cap_desc",
         "per_page": 10,
         "page": 1,
