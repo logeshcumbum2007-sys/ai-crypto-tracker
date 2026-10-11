@@ -1,60 +1,29 @@
-from datetime import datetime
-
-
 def predict_trends(market_data):
-    """
-    Module 2: AI-Based Price Trend Prediction & Anomaly Detection
-    Local analysis using live market data from Module 1.
-    """
+    print("\n========== AI TREND ANALYSIS ==========\n")
 
-    results = []
-
-    for _, row in market_data.iterrows():
-
-        symbol = row["symbol"]
-        price = float(row["price_usd"])
-        volume = float(row["volume_24h"])
-        market_cap = float(row["market_cap"])
-
-        volume_ratio = volume / market_cap if market_cap > 0 else 0
-
-        if volume_ratio > 0.10:
-            direction = "UP"
-            confidence = 0.85
-            anomaly = True
-            analysis = "High trading activity detected relative to market capitalization."
-
-        elif volume_ratio > 0.05:
-            direction = "UP"
-            confidence = 0.72
-            anomaly = False
-            analysis = "Healthy trading activity detected."
-
+    for symbol, price_change in market_data.items():
+        if price_change > 1:
+            trend = "UP"
+            confidence = 60 + min(price_change, 15)
+        elif price_change < -1:
+            trend = "DOWN"
+            confidence = 60 + min(abs(price_change), 15)
         else:
-            direction = "DOWN"
-            confidence = 0.62
-            anomaly = False
-            analysis = "Relatively low trading activity detected."
+            trend = "NEUTRAL"
+            confidence = 50
 
-        result = {
-            "timestamp": datetime.utcnow().isoformat(),
-            "symbol": symbol,
-            "predicted_direction": direction,
-            "confidence": confidence,
-            "anomaly_flag": anomaly,
-            "analysis": analysis
-        }
-
-        results.append(result)
-
-    print("\n=== Module 2: AI-Based Price Trend Prediction ===")
-
-    for result in results:
-        print(result)
-
-    return results
+        print(f"Asset: {symbol}")
+        print(f"Predicted Trend: {trend}")
+        print(f"Confidence: {confidence:.1f}%")
+        print("-" * 35)
 
 
 if __name__ == "__main__":
-    print("Module 2 is ready.")
-    print("It requires market data from Module 1.")
+    # Demonstration input; replace with actual market data when integrating.
+    sample_data = {
+        "BTC": -2.0,
+        "ETH": 1.5,
+        "SOL": 0.3
+    }
+
+    predict_trends(sample_data)
