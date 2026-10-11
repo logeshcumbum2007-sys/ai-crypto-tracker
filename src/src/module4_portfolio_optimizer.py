@@ -1,74 +1,35 @@
-def optimize_portfolio(predictions):
-    """
-    Module 4: Portfolio Optimization & Risk Scoring
+def optimize_portfolio(investment, assets):
+    print("\n========== PORTFOLIO OPTIMIZATION ==========\n")
 
-    Uses predictions from Module 2 to calculate:
-    - Risk score
-    - Expected return
-    - Portfolio weight
-    """
+    total_market_cap = sum(assets.values())
 
-    assets = []
+    if investment <= 0 or total_market_cap <= 0:
+        print("Invalid investment or asset data.")
+        return
 
-    for prediction in predictions:
-        symbol = prediction["symbol"]
-        confidence = float(prediction["confidence"])
-        direction = prediction["predicted_direction"]
-        anomaly = prediction["anomaly_flag"]
+    total_allocated = 0
 
-        # Estimate expected return from prediction confidence
-        if direction == "UP":
-            expected_return = round(confidence * 0.25, 3)
-        else:
-            expected_return = round(-confidence * 0.10, 3)
+    for symbol, market_cap in assets.items():
+        weight = market_cap / total_market_cap
+        amount = round(investment * weight, 2)
+        total_allocated += amount
 
-        # Higher confidence = lower basic risk
-        risk_score = round(1.0 - confidence, 2)
+        print(f"Asset: {symbol}")
+        print(f"Allocation: {weight * 100:.2f}%")
+        print(f"Investment Amount: ${amount:,.2f}")
+        print("-" * 35)
 
-        # Increase risk when an anomaly is detected
-        if anomaly:
-            risk_score = min(1.0, round(risk_score + 0.20, 2))
-
-        assets.append({
-            "symbol": symbol,
-            "risk_score": risk_score,
-            "expected_return": expected_return
-        })
-
-    # Calculate portfolio scores
-    scores = []
-
-    for asset in assets:
-        score = max(
-            0.01,
-            (asset["expected_return"] + 0.10)
-            / (asset["risk_score"] + 0.10)
-        )
-        scores.append(score)
-
-    total_score = sum(scores)
-
-    # Calculate weights
-    portfolio = []
-
-    for asset, score in zip(assets, scores):
-        weight = round(score / total_score, 3)
-
-        portfolio.append({
-            "symbol": asset["symbol"],
-            "weight": weight,
-            "expected_return": asset["expected_return"],
-            "risk_score": asset["risk_score"]
-        })
-
-    print("\n=== Module 4: Portfolio Optimization & Risk Scoring ===")
-
-    for item in portfolio:
-        print(item)
-
-    return portfolio
+    print(f"Total Investment: ${investment:,.2f}")
+    print(f"Total Allocated: ${total_allocated:,.2f}")
 
 
 if __name__ == "__main__":
-    print("Module 4 is ready.")
-    print("It requires predictions from Module 2.")
+    assets = {
+        "BTC": 600,
+        "ETH": 250,
+        "SOL": 100,
+        "ADA": 30,
+        "DOT": 20
+    }
+
+    optimize_portfolio(10000, assets)
