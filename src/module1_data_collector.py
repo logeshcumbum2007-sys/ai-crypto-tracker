@@ -1,35 +1,47 @@
 import requests
-import pandas as pd
-from datetime import datetime
 
-def fetch_crypto_data(symbols=["BTC", "ETH", "SOL"]):
-    url = "https://api.coingecko.com/api/v3/coins/markets"
-    params = {
-        "vs_currency": "usd",
-        "ids": "bitcoin,ethereum,solana",
-        "order": "market_cap_desc",
-        "per_page": 10,
-        "page": 1,
-        "sparkline": False
+
+def collect_market_data():
+    print("\n========== CRYPTO MARKET DATA ==========\n")
+
+    coins = {
+        "bitcoin": "BTC",
+        "ethereum": "ETH",
+        "solana": "SOL"
     }
-    resp = requests.get(url, params=params, timeout=10)
-    resp.raise_for_status()
-    data = resp.json()
 
-    rows = []
-    for coin in data:
-        rows.append({
-            "timestamp": datetime.utcnow().isoformat(),
-            "symbol": coin["symbol"].upper(),
-            "price_usd": coin["current_price"],
-            "volume_24h": coin["total_volume"],
-            "market_cap": coin["market_cap"]
-        })
+    url = "https://api.coingecko.com/api/v3/simple/price"
 
-    df = pd.DataFrame(rows)
-    print("=== Module 1: Real-Time Crypto Data ===")
-    print(df.to_string(index=False))
-    return df
+    params = {
+        "ids": ",".join(coins.keys()),
+        "vs_currencies": "usd",
+        "include_24hr_change": "true",
+        "include_24hr_vol": "true",
+        "include_market_cap": "true"
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        for coin_id, symbol in coins.items():
+            coin = data.get(coin_id, {})
+
+            if "usd" not in coin:
+                print(f"{symbol}: Data unavailable")
+                continue
+
+            print(f"Symbol: {symbol}")
+            print(f"Price: ${coin['usd']:,.2f}")
+            print(f"24h Change: {coin.get('usd_24h_change', 0):.2f}%")
+            print(f"24h Volume: ${coin.get('usd_24h_vol', 0):,.2f}")
+            print(f"Market Cap: ${coin.get('usd_market_cap', 0):,.2f}")
+            print("-" * 35)
+
+    except requests.RequestException as error:
+        print("Unable to retrieve live data:", error)
+
 
 if __name__ == "__main__":
-    fetch_crypto_data()
+    collect_market_data()
