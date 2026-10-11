@@ -2,28 +2,32 @@ import hashlib
 import json
 
 
-def write_predictions_on_chain(predictions):
-    """
-    Module 3: Blockchain Integration
+def generate_hash(data):
+    content = json.dumps(data, sort_keys=True)
+    return hashlib.sha256(content.encode()).hexdigest()
 
-    Receives predictions from Module 2 and creates
-    a SHA-256 hash to simulate blockchain storage.
-    """
 
-    payload = json.dumps(predictions, sort_keys=True)
-
-    tx_hash = "0x" + hashlib.sha256(payload.encode()).hexdigest()
-
-    print("\n=== Module 3: Blockchain Integration ===")
-    print("Number of predictions:", len(predictions))
-    print("Payload (first 100 chars):", payload[:100], "...")
-    print("Simulated on-chain transaction hash:")
-    print(tx_hash)
-    print("Status: Prediction hash written to blockchain (simulated).")
-
-    return tx_hash
+def verify_data(data, saved_hash):
+    return generate_hash(data) == saved_hash
 
 
 if __name__ == "__main__":
-    print("Module 3 is ready.")
-    print("It requires predictions from Module 2.")
+    print("\n========== HASH VERIFICATION ==========\n")
+
+    transaction = {
+        "symbol": "BTC",
+        "price": 84800.00,
+        "status": "Recorded"
+    }
+
+    saved_hash = generate_hash(transaction)
+
+    print("Transaction:", transaction)
+    print("\nGenerated SHA-256 Hash:")
+    print(saved_hash)
+
+    if verify_data(transaction, saved_hash):
+        print("\nVerification Status: Successful")
+        print("Data Integrity: Verified")
+    else:
+        print("\nVerification Status: Failed")
